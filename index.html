@@ -38,9 +38,9 @@
             </div>
             <div class="form-group">
                 <label for="obspw">Twitch Reward Name</label>
-                <input class="form-control" id="rewardname" name="rewardname" placeholder="Random Mic Filter">
-                <small id="sourceHelp" class="form-text text-muted">Exact name of the channel point reward that will be
-                    used to mute the microphone on Twitch. Case sensitive!</small>
+                <input class="form-control" id="rewardname" name="rewardname" placeholder="Mic Filter">
+                <small id="sourceHelp" class="form-text text-muted">Exact name of the channel point reward that people
+                    will use to enable filters.</small>
             </div>
             <div class="form-group">
                 <label for="obsmic">OBS Source Name</label>
@@ -129,7 +129,7 @@
             var filteramount = document.getElementById("filteramount").value;
 
             if (rewardname.length == 0) {
-                rewardname = "Random Mic Filter";
+                rewardname = "Mic Filter";
             }
             if (sourcename.length == 0) {
                 sourcename = "Mic/Aux";
