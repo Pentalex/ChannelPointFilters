@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>PointMute URL Generator</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/fontawesome.min.css">
+
+</head>
+<style>
+    body.swal2-shown>[aria-hidden="true"] {
+        transition: 0.1s filter;
+        filter: blur(10px);
+    }
+</style>
+
+<body>
+    <div class="d-flex justify-content-center justify-content-center mt-5">
+        <form>
+            <div class="form-group">
+                <label for="twitchtoken">Twitch OAuth Token</label>
+                <input class="form-control" id="twitchtoken" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    aria-describedby="getoauth" name="oauth">
+                <small id="getoauth" class="form-text text-muted"><a
+                        href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=f3l7ldc6zwtdunaoe53rzms4icn0pl&redirect_uri=https://pentalex.github.io/ChannelPointFilters/&scope=channel:read:redemptions">Get
+                        Token</a></small>
+            </div>
+            <div class="form-group">
+                <label for="obspw">WebSocket Password</label>
+                <input type="password" class="form-control" id="obspw" aria-describedby="pwHelp" name="pw">
+                <small id="pwHelp" class="form-text text-muted">Don't know what this is? Check out the guide <a
+                        href="README.txt" target="_blank">here</a></small>
+            </div>
+            <div class="form-group">
+                <label for="obspw">Twitch Reward Name</label>
+                <input class="form-control" id="rewardname" name="rewardname" placeholder="Random Mic Filter">
+                <small id="sourceHelp" class="form-text text-muted">Exact name of the channel point reward that will be
+                    used to mute the microphone on Twitch. Case sensitive!</small>
+            </div>
+            <div class="form-group">
+                <label for="obsmic">OBS Source Name</label>
+                <input class="form-control" id="sourcename" name="sourcename" placeholder="Mic/Aux">
+                <small id="sourceHelp" class="form-text text-muted">Name of your microphone in OBS. Can be found
+                    in Audio Mixer.</small>
+            </div>
+            <div class="form-group">
+                <label for="time">Time per filter (in seconds)</label>
+                <input type="number" min="1" max="10000" class="form-control" id="time" name="time" placeholder="15">
+            </div>
+            <div class="form-group">
+                <label for="time">Amount of filters</label>
+                <input type="number" min="1" max="10000" class="form-control" id="filteramount" name="filteramount"
+                    placeholder="3">
+            </div>
+            <button type="button" id="generate" class="btn btn-primary">Generate URL</button>
+
+            <hr>
+
+
+        </form>
+
+
+    </div>
+
+    <div class="d-flex justify-content-center justify-content-center mt-5">
+        <div class="input-group mt-5 col-7" id="generatedBox">
+            <input type="text" min="1" max="10000" class="form-control" id="generated" name="generated"
+                placeholder="Please hit generate URL" readonly>
+            <span class="input-group-btn ml-2">
+                <button type="button" id="copy" class="btn btn-primary">Copy</button>
+            </span>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- TODO: Here goes your content! -->
+
+
+
+    <!-- Including Bootstrap JS (with its jQuery dependency) so that dynamic components work -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+
+    </script>
+    <script>
+        var hash = window.location.hash;
+        const button = document.getElementById("generate");
+        const copybutton = document.getElementById("copy");
+        copybutton.onclick = function () {
+            navigator.clipboard.writeText(document.getElementById("generated").value).then(() => {
+                console.log('Content copied to clipboard');
+                copybutton.innerHTML = "Copied!"
+            }, () => {
+                console.error('Failed to copy');
+                /* Rejected - text failed to copy to the clipboard */
+            });
+        }
+
+        if (hash) {
+            var oauthbox = document.getElementById("twitchtoken");
+            oauthbox.value = hash.substring(14, 44);
+            oauthbox.readOnly = true;
+        } else {
+            Swal.fire({
+                title: 'Streamer Warning!',
+                text: 'DO NOT DO THIS SETUP ON STREAM. YOU WILL LEAK.',
+                icon: 'warning',
+                confirmButtonText: 'Understood.'
+            })
+        }
+
+        button.onclick = function () {
+            const token = document.getElementById("twitchtoken").value;
+            const obspw = document.getElementById("obspw").value;
+            var rewardname = document.getElementById("rewardname").value;
+            var sourcename = document.getElementById("sourcename").value;
+            var time = document.getElementById("time").value;
+            var filteramount = document.getElementById("filteramount").value;
+
+            if (rewardname.length == 0) {
+                rewardname = "Random Mic Filter";
+            }
+            if (sourcename.length == 0) {
+                sourcename = "Mic/Aux";
+            }
+            if (time.length == 0) {
+                time = 15;
+            }
+            if (filteramount.length == 0) {
+                filteramount = 3;
+            }
+
+            var url = new URL(window.location.protocol + window.location.host + '/ChannelPointMute/app.html');
+            url.searchParams.append('token', token);
+            url.searchParams.append('obspw', obspw);
+            url.searchParams.append('rewardname', rewardname);
+            url.searchParams.append('sourcename', sourcename);
+            url.searchParams.append('time', time);
+            url.searchParams.append('filteramount', filteramount);
+
+            document.getElementById("generated").value = url;
+
+            document.getElementById("generatedBox").style.visibility = "visible";
+
+            console.log(url);
+
+
+        }
+    </script>
+</body>
+
+</html>
